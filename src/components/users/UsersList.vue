@@ -21,6 +21,7 @@
         >
       </div>
       <!-- 用户列表 -->
+      <!-- stripe 是否为斑马纹 -->
       <el-table :data="usersList" border stripe>
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="姓名" prop="username"></el-table-column>
@@ -53,6 +54,7 @@
               size="mini"
               icon="el-icon-setting"
               circle
+              @click="addRole(scope.row)"
             ></el-button>
           </template>
         </el-table-column>
@@ -120,6 +122,29 @@
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="rightDialogVisible" width="50%">
+      <div>
+        <p>当前的用户：{{ usersInfo.username }}</p>
+        <p>当前的角色：{{ usersInfo.role_name }}</p>
+        <p>
+          分配新角色：
+          <el-select v-model="selectedRoleById" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="rightDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="changeRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -144,9 +169,9 @@ export default {
       addFormRules: {
         username: [
           {
-            min: 5,
+            min: 2,
             max: 10,
-            message: "用户名的长度在5~10之间",
+            message: "用户名的长度在2~10之间",
           },
           {
             required: true,
@@ -199,6 +224,11 @@ export default {
           },
         ],
       },
+      rightDialogVisible: false,
+      usersInfo: {},
+      // 角色列表
+      roleList: [],
+      selectedRoleById: "",
     };
   },
   created() {
@@ -271,7 +301,7 @@ export default {
         this.getUsersList();
       });
     },
-    // // 移除用户
+    // 移除用户
     async removeUserById(id) {
       const confirmResult = await this.$confirm(
         "此操作将永久删除该用户, 是否继续?",
@@ -293,6 +323,35 @@ export default {
       }
       this.$message.success("删除成功");
       this.getUsersList();
+    },
+    // 分配角色
+    async addRole(userInfo) {
+      this.usersInfo = userInfo;
+      // 获取角色列表
+      const { data: res } = await this.$axios.get("roles");
+      if (res.meta.status !== 200) {
+        return this.$message.error("角色列表获取失败");
+      }
+      this.roleList = res.data;
+      this.rightDialogVisible = true;
+    },
+    // 改变新的角色
+    async changeRole() {
+      if (!this.selectedRoleById) {
+        return this.$message.error("重新分配角色失败");
+      }
+      const { data: res } = await this.$axios.put(
+        `users/${this.usersInfo.id}/role`,
+        {
+          rid: this.selectedRoleById,
+        }
+      );
+      if (res.meta.status !== 200) {
+        return this.$message.error("更新角色失败");
+      }
+      this.$message.success("角色更新成功");
+      this.getUsersList();
+      this.rightDialogVisible = false;
     },
   },
 };

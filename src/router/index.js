@@ -3,7 +3,9 @@ import VueRouter from "vue-router";
 import Login from "../views/Login.vue";
 import Home from "../views//Home.vue";
 import Welcome from "../components/Welcome.vue";
-import UsersList from "../components/users/UsersList.vue"
+import UsersList from "../components/users/UsersList.vue";
+import LimitList from "../components/limit/LimitList.vue";
+import Roles from "../components/limit/Roles.vue";
 
 Vue.use(VueRouter);
 
@@ -26,9 +28,17 @@ const routes = [
         component: Welcome,
       },
       {
-        path:'/users',
-        component:UsersList
-      }
+        path: "/users",
+        component: UsersList,
+      },
+      {
+        path: "/rights",
+        component: LimitList,
+      },
+      {
+        path: "/roles",
+        component: Roles,
+      },
     ],
   },
 ];

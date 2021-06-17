@@ -21,7 +21,13 @@ import {
   Switch,
   Pagination,
   Dialog,
-  MessageBox
+  MessageBox,
+  Tag,
+  Row,
+  Col,
+  Tree,
+  Select,
+  Option
 } from "element-ui";
 
 Vue.use(Button);
@@ -46,8 +52,9 @@ Vue.use(Switch);
 Vue.use(Pagination);
 Vue.use(Dialog);
 Vue.prototype.$confirm = MessageBox.confirm;
-
-
-
-
-
+Vue.use(Tag);
+Vue.use(Row);
+Vue.use(Col);
+Vue.use(Tree);
+Vue.use(Select);
+Vue.use(Option);
