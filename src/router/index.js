@@ -7,6 +7,10 @@ import UsersList from "../components/users/UsersList.vue";
 import LimitList from "../components/limit/LimitList.vue";
 import Roles from "../components/limit/Roles.vue";
 import Categories from "../components/goods/Categories.vue";
+import Params from "../components/goods/Params.vue";
+import Goods from "../components/goods/Goods.vue";
+import Orders from "../components/orders/Orders.vue";
+import Reports from "../components/reports/Reports.vue";
 
 Vue.use(VueRouter);
 
@@ -43,6 +47,22 @@ const routes = [
       {
         path: "/categories",
         component: Categories,
+      },
+      {
+        path: "/params",
+        component: Params,
+      },
+      {
+        path: "/goods",
+        component: Goods,
+      },
+      {
+        path: "/orders",
+        component: Orders,
+      },
+      {
+        path: "/reports",
+        component: Reports,
       },
     ],
   },
