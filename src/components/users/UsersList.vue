@@ -245,10 +245,12 @@ export default {
     },
     // 每页数据的个数
     handleSizeChange(usersNum) {
-      (this.queryInfo.pagesize = usersNum), this.getUsersList();
+      this.queryInfo.pagesize = usersNum;
+      this.getUsersList();
     },
     handleCurrentChange(currentNum) {
-      (this.queryInfo.pagenum = currentNum), this.getUsersList();
+      this.queryInfo.pagenum = currentNum;
+      this.getUsersList();
     },
     // 关闭dialog
     addDialogClose() {
