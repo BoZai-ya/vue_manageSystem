@@ -29,7 +29,7 @@
         <el-table-column label="是否发货" prop="is_send"></el-table-column>
         <el-table-column label="下单时间" prop="create_time"> </el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope">
+          <template>
             <el-button
               type="primary"
               size="mini"
@@ -141,14 +141,11 @@ export default {
       this.editDialogVisible = true;
     },
     // 展示物流进度
-    async showProgress() {
-      // const {data:res} = await this.$axios.get('/kuaidi/1106975712662')
-      // if(res.meta.status !==200){
-      //   this.$message.error('进度获取失败')
-      // }
-      // this.progressInfo = res.data
-      this.progressDialogVisible = true;
-      // console.log(res);
+    showProgress() {
+      this.$axios.get('/kuaidi/1106975712662').then(res => {
+        console.log(res)
+      })
+      
     },
   },
 };
