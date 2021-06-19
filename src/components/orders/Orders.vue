@@ -83,7 +83,7 @@
       :visible.sync="progressDialogVisible"
       width="50%"
     >
-    <span>这是物流进度展示</span>
+      <span>这是物流进度展示</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="progressDialogVisible = false">关闭</el-button>
       </span>
@@ -108,7 +108,7 @@ export default {
         address: "",
       },
       progressDialogVisible: false,
-      progressInfo:[]
+      progressInfo: [],
     };
   },
   created() {
@@ -142,10 +142,7 @@ export default {
     },
     // 展示物流进度
     showProgress() {
-      this.$axios.get('/kuaidi/1106975712662').then(res => {
-        console.log(res)
-      })
-      
+      this.progressDialogVisible = true;
     },
   },
 };
