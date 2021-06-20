@@ -88,7 +88,6 @@
         </el-form-item>
         <el-form-item label="父级分类">
           <el-cascader
-            expand-trigger="hover"
             :options="cateList"
             :props="cascaderProps"
             v-model="showCate"
@@ -153,10 +152,11 @@ export default {
       // 父级分类列表
       parentCateList: [],
       cascaderProps: {
-        value: "cat_level",
+        value: "cat_id",
         label: "cat_name",
         children: "children",
-        checkStrictly : true
+       expandTrigger:"hover"
+
       },
       // 级联选择器显示的内容
       showCate: [],
@@ -173,7 +173,9 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error("获取商品分类失败");
       }
+      // console.log(res.data);
       this.cateList = res.data.result;
+      // console.log(this.cateList);
       this.total = res.data.total;
     },
     handleSizeChange(num) {
@@ -185,22 +187,21 @@ export default {
       this.getCateList();
     },
     showAddCateDialog() {
-      this.getParentCateList();
+      // this.getParentCateList();
       this.addCateDialogVisible = true;
     },
     // 获取父级列表
-    async getParentCateList() {
-      const { data: res } = await this.$axios.get("categories", {
-        params: { type: 2 },
-      });
-      if (res.meta.status !== 200) {
-        return this.$message.error("获取父级列表失败");
-      }
-      this.parentCateList = res.data;
-    },
+    // async getParentCateList() {
+    //   const { data: res } = await this.$axios.get("categories", {
+    //     params: { type: 2 },
+    //   });
+    //   if (res.meta.status !== 200) {
+    //     return this.$message.error("获取父级列表失败");
+    //   }
+    //   this.parentCateList = res.data;
+    // },
     // 级联选择器中选择项发生变化时触发
     handleChange() {
-      console.log(this.showCate);
       if (this.showCate.length > 0) {
         this.addForm.cat_pid = this.showCate[this.showCate.length - 1];
         this.addForm.cat_level = this.showCate.length;
