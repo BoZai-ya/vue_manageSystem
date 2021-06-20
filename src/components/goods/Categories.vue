@@ -75,6 +75,7 @@
       title="添加分类"
       :visible.sync="addCateDialogVisible"
       width="50%"
+      @close="closeAddDialog"
     >
       <el-form
         :model="addForm"
@@ -88,19 +89,18 @@
         <el-form-item label="父级分类">
           <el-cascader
             expand-trigger="hover"
-            :options="parentCateList"
+            :options="cateList"
             :props="cascaderProps"
             v-model="showCate"
             @change="handleChange"
             clearable
+            size="small"
           ></el-cascader>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCateDialogVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="addCate">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -153,9 +153,10 @@ export default {
       // 父级分类列表
       parentCateList: [],
       cascaderProps: {
-        value: "cat_id",
+        value: "cat_level",
         label: "cat_name",
         children: "children",
+        checkStrictly : true
       },
       // 级联选择器显示的内容
       showCate: [],
@@ -197,8 +198,39 @@ export default {
       }
       this.parentCateList = res.data;
     },
+    // 级联选择器中选择项发生变化时触发
     handleChange() {
       console.log(this.showCate);
+      if (this.showCate.length > 0) {
+        this.addForm.cat_pid = this.showCate[this.showCate.length - 1];
+        this.addForm.cat_level = this.showCate.length;
+        return;
+      } else {
+        this.addForm.cat_pid = 0;
+        this.addForm.cat_level = 0;
+      }
+    },
+    // 当添加分类的对话框关闭时，将里面的内容清空
+    closeAddDialog() {
+      this.$refs.addFormRef.resetFields();
+      this.showCate = [];
+    },
+    // 添加分类
+    addCate() {
+      this.$refs.addFormRef.validate(async (valid) => {
+        if (!valid) return;
+        const { data: res } = await this.$axios.post(
+          "categories",
+          this.addForm
+        );
+
+        if (res.meta.status !== 201) {
+          return this.$message.error("添加分类失败");
+        }
+        this.$message.success("添加成功");
+        this.getCateList();
+        this.addCateDialogVisible = false;
+      });
     },
   },
 };
