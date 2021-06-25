@@ -41,18 +41,20 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
-          <template>
+          <template slot-scope="props">
             <el-button
               type="primary"
               size="mini"
               icon="el-icon-edit"
               circle
+              @click="showEditDialog(props.row.cat_id)"
             ></el-button>
             <el-button
               type="danger"
               size="mini"
               icon="el-icon-delete"
               circle
+              @click="deleteCate(props.row.cat_id)"
             ></el-button>
           </template>
         </el-table-column>
@@ -100,6 +102,30 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addCate">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改分类信息 -->
+    <el-dialog
+      title="修改分类信息"
+      :visible.sync="editDialogVisible"
+      width="50%"
+    >
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="80px"
+      >
+        <el-form-item label="分类名称" prop="cat_name">
+          <el-input v-model="editForm.cat_name"></el-input>
+        </el-form-item>
+        <el-form-item label="分类等级" prop="cat_level">
+          <el-input v-model="editForm.cat_level"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editCateInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -155,10 +181,29 @@ export default {
         value: "cat_id",
         label: "cat_name",
         children: "children",
-       expandTrigger:"hover"
+        expandTrigger: "hover",
       },
       // 级联选择器显示的内容
       showCate: [],
+      // 编辑分类
+      editDialogVisible: false,
+      editForm: {},
+      editFormRules: {
+        cat_name: [
+          {
+            required: true,
+            message: "请修改商品分类名称",
+            trigger: "blur",
+          },
+        ],
+        cat_level: [
+          {
+            required: true,
+            message: "请修改商品分类等级",
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   created() {
@@ -189,16 +234,6 @@ export default {
       // this.getParentCateList();
       this.addCateDialogVisible = true;
     },
-    // 获取父级列表
-    // async getParentCateList() {
-    //   const { data: res } = await this.$axios.get("categories", {
-    //     params: { type: 2 },
-    //   });
-    //   if (res.meta.status !== 200) {
-    //     return this.$message.error("获取父级列表失败");
-    //   }
-    //   this.parentCateList = res.data;
-    // },
     // 级联选择器中选择项发生变化时触发
     handleChange() {
       if (this.showCate.length > 0) {
@@ -231,6 +266,61 @@ export default {
         this.getCateList();
         this.addCateDialogVisible = false;
       });
+    },
+    // 修改分类信息
+    async showEditDialog(id) {
+      const { data: res } = await this.$axios.get("categories/" + id);
+      if (res.meta.status !== 200) {
+        return this.$message.error("商品信息查询失败");
+      }
+      this.editForm = res.data;
+      // console.log(this.editForm);
+      this.editDialogVisible = true;
+    },
+    editDialogclosed() {
+      this.$refs.editFormRef.resetFields();
+    },
+    // 编辑分类信息
+    editCateInfo() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return;
+        const { data: res } = await this.$axios.put(
+          "categories/" + this.editForm.cat_id,
+          {
+            cat_name: this.editForm.cat_name,
+            cat_level: this.editForm.cat_level,
+          }
+        );
+        if (res.meta.status !== 200) {
+          this.$message.error("修改信息失败!");
+        }
+        this.$message.success("修改信息成功");
+        this.editDialogVisible = false;
+        this.getCateList();
+      });
+    },
+    // 删除分类操作
+    async deleteCate(id) {
+      const confirmResult = await this.$confirm(
+        "此操作将永久删除该分类, 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      ).catch((err) => err);
+      // console.log(confirmResult);
+      if (confirmResult !== "confirm") {
+        return this.$message.info("取消删除操作");
+      }
+      const { data: res } = await this.$axios.delete("categories/" + id);
+      if (res.meta.status !== 200) {
+        return this.$message.error("删除操作失败");
+      }
+      // console.log(res);
+      this.$message.success("删除成功");
+      this.getCateList();
     },
   },
 };

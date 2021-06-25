@@ -41,6 +41,7 @@
               size="mini"
               icon="el-icon-edit"
               circle
+              @click="showEditDialog(scope.row.goods_id)"
             ></el-button>
             <el-button
               type="danger"
@@ -64,6 +65,33 @@
       >
       </el-pagination>
     </el-card>
+    <!-- 修改商品信息 -->
+    <el-dialog
+      title="修改商品信息"
+      :visible.sync="editDialogVisible"
+      width="50%"
+    >
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="80px"
+      >
+        <el-form-item label="商品名称" prop="goods_name">
+          <el-input v-model="editForm.goods_name"></el-input>
+        </el-form-item>
+        <el-form-item label="商品重量" prop="goods_weight">
+          <el-input v-model="editForm.goods_weight"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格" prop="goods_price">
+          <el-input v-model="editForm.goods_price"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editGoodsInfo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -78,6 +106,31 @@ export default {
         pagesize: 10,
       },
       total: 0,
+      editDialogVisible: false,
+      editForm: {},
+      editFormRules: {
+        goods_name: [
+          {
+            required: true,
+            message: "请修改商品名称",
+            trigger: "blur",
+          },
+        ],
+        goods_weight: [
+          {
+            required: true,
+            message: "请输入重量",
+            trigger: "blur",
+          },
+        ],
+        goods_price: [
+          {
+            required: true,
+            message: "请输入价格",
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   created() {
@@ -105,6 +158,40 @@ export default {
       this.queryInfo.pagenum = currentNum;
       this.getGoodsList();
     },
+    // 修改商品信息
+    async showEditDialog(id) {
+      const { data: res } = await this.$axios.get("goods/" + id);
+      if (res.meta.status !== 200) {
+        return this.$message.error("商品信息查询失败");
+      }
+      this.editForm = res.data;
+      console.log(this.editForm);
+      this.editDialogVisible = true;
+    },
+    editDialogclosed() {
+      this.$refs.editFormRef.resetFields();
+    },
+    // 编辑商品信息
+    editGoodsInfo() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return;
+        const { data: res } = await this.$axios.put(
+          "goods/" + this.editForm.goods_id,
+          {
+            goods_name: this.editForm.goods_name,
+            goods_price: this.editForm.goods_price,
+            goods_weight: this.editForm.goods_weight,
+          }
+        );
+        if (res.meta.status !== 200) {
+          this.$message.error("修改信息失败!");
+        }
+        this.$message.success("修改信息成功");
+        this.editDialogVisible = false;
+        this.getGoodsList();
+      });
+    },
+
     // 删除商品操作
     async deleteGoods(id) {
       const confirmResult = await this.$confirm(
@@ -126,12 +213,12 @@ export default {
         return this.$message.error("删除失败");
       }
       this.$message.success("删除成功");
-     this.getGoodsList();
+      this.getGoodsList();
     },
     // 点击添加商品跳转到添加商品页
-    addGoods(){
-      this.$router.push('/addgood')
-    }
+    addGoods() {
+      this.$router.push("/addgood");
+    },
   },
 };
 </script>

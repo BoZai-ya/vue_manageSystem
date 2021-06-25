@@ -205,7 +205,7 @@ export default {
     },
     // 级联选择器中选择项发生变化时触发
     handleChange() {
-      console.log(this.showCate);
+      // console.log(this.showCate);
     },
     async tabClick() {
       // 访问动态参数

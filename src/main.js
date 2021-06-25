@@ -5,6 +5,9 @@ import './plugins/element.js'
 import "./assets/global.css"
 import './plugins/axios'
 import './filters/index'
+// 导入树形插件
+import TreeTable from 'vue-table-with-tree-grid'
+Vue.component("tree-table", TreeTable)
 // 导入富文本编辑器以及样式
 import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css' // import styles
