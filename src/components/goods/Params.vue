@@ -390,4 +390,10 @@ export default {
 .el-tag {
   margin: 5px;
 }
+.ss {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 </style>

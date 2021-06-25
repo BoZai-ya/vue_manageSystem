@@ -156,7 +156,6 @@ export default {
         label: "cat_name",
         children: "children",
        expandTrigger:"hover"
-
       },
       // 级联选择器显示的内容
       showCate: [],
